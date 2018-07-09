@@ -2,8 +2,10 @@
 
 require_once("config.php");
 
-$sql = new Sql();
+$root = new Usuario();
 
-echo json_encode($sql->select("SELECT * FROM tb_usuarios WHERE idusuario = :id", array(":id" => 3)));
+$root->loadById(3);
 
+// Carrega o obecto através do método __toString()
+echo $root;
 ?>
