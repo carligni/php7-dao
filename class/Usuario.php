@@ -7,6 +7,12 @@ class Usuario {
     private $dessenha; 
     private $dtcadastro; 
 
+    public function __construct($user = "", $password = "")
+    {
+        $this->setDeslogin($user);
+        $this->setDessenha($password);
+    }
+
     public function getIdusuario()
     {
         return $this->idusuario;
@@ -52,14 +58,8 @@ class Usuario {
         $results = $sql->select("SELECT * FROM tb_usuarios WHERE idusuario = :id", array(":id" => $id));
 
         if (count($results) > 0):
-            // Array que é retornado (array de arrays)
-            $row = $results[0]; 
-
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
-
+            // Array que é retornado (array de arrays $results[0])
+            $this->setData($results[0]);
         endif;
     }
 
@@ -89,19 +89,61 @@ class Usuario {
         ));
 
         if (count($results) > 0):
-
-            $row = $results[0];
-
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
-
+            $this->setData($results[0]);
         else:
-
             throw new Exception("Utilizador ou password errados.");
-
         endif;
+    }
+
+    public function setData($data)
+    {
+        $this->setIdusuario($data['idusuario']);
+        $this->setDeslogin($data['deslogin']);
+        $this->setDessenha($data['dessenha']);
+        $this->setDtcadastro(new DateTime($data['dtcadastro']));
+    }
+
+    public function insert()
+    {
+        $sql = new Sql();
+
+        $results = $sql->select("CALL sp_usuarios_insert(:user, :password)", array(
+            ":user" => $this->getDeslogin(),
+            ":password" => $this->getDessenha()
+        ));
+
+        if (count($results) > 0):
+            $this->setData($results[0]);
+        endif;
+    }
+
+    public function update($user, $password)
+    {
+        $this->setDeslogin($user);
+        $this->setDessenha($password);
+
+        $sql = new Sql();
+
+        $sql->setQuery("UPDATE tb_usuarios SET deslogin = :user, dessenha = :password WHERE idusuario = :id", array(
+            ":user" => $this->getDeslogin(),
+            ":password" => $this->getDessenha(),
+            ":id" => $this->getIdusuario()
+        ));
+    }
+
+    public function delete()
+    {
+        $sql = new Sql();
+
+        $sql->setQuery("DELETE FROM tb_usuarios WHERE idusuario = :id", array(
+            ":id" => $this->getIdusuario()
+        ));
+
+        $this->setIdusuario(0);
+        $this->setDeslogin("");
+        $this->setDessenha("");
+        $this->setDtcadastro(new DateTime());
+
     }
 
     // Para um único registo

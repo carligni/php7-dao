@@ -20,8 +20,36 @@ echo $root; */
 // echo json_encode($lista);
 
 // Carregar usuario com nome e password
-$utilizador = new Usuario();
-$utilizador->login("carl thomas", "carl");
+// $utilizador = new Usuario();
+// $utilizador->login("carl thomas", "carl");
 
-echo $utilizador;
+// echo $utilizador;
+
+/* // Inserir aluno
+$aluno = new Usuario("aluno", "@lun0");
+
+// $aluno->setDeslogin("aluno");
+// $aluno->setDessenha("@lun0");
+
+$aluno->insert();
+
+echo $aluno; */
+
+
+/* // Alterar aluno
+$aluno = new Usuario();
+// $aluno->setIdusuario(5);
+$aluno->loadById(5);
+
+$aluno->update("Gustavo", "gggggg");
+
+echo $aluno;
+ */
+
+// Apagar aluno
+$aluno = new Usuario();
+$aluno->loadById(13);
+$aluno->delete();
+echo $aluno;
+
 ?>
